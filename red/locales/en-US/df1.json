@@ -31,12 +31,7 @@
             },
             "validation": {
                 "ERR_PARSE_EMPTY": "Address cannot be empty",
-                "ERR_PARSE_UNKNOWN_FORMAT": "Unknown address format, check node's help section",
-                "ERR_PARSE_MEM_AREA": "Memory area identifier is unknown or invalid",
-                "ERR_PARSE_TYPE_MODIFIER": "Type modifier is unknown or invalid",
-                "ERR_PARSE_DEVICE_OFFSET": "Device offset is unknown or invalid",
-                "ERR_PARSE_BIT_OFFSET": "Bit offset is unknown or invalid",
-                "ERR_PARSE_ARRAY_LENGTH": "Array length is unknown or invalid"
+                "ERR_PARSE_UNKNOWN_FORMAT": "Unknown address format, check node's help section"
             }
         },
         "in": {
