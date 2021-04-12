@@ -138,24 +138,22 @@ module.exports = function (RED) {
 
         async function doCycle() {
             if (!readInProgress && connected) {
-                
                 readInProgress = true;
                 
                 let resObj = {};
                 let keys = Object.keys(_vars);
 
+                console.log("Endpoint - doCycle");
+                
                 for (let i = 0; i < keys.length; i++) {
-                    // This is provisory (and hurts my eyes) 
-                    let res = await df1.readAddress(_vars[keys[i]])
-                    .then(res => {
+                    try {
+                        let res = await df1.readAddress(_vars[keys[i]]);
                         resObj[keys[i]] = res.value;
-                    })
-                    .catch(e => {
-                        onError(e);
+                    } catch (error) {
+                        onError(error);
                         readInProgress = false;
                         return;
-                    })
-                    
+                    }
                 }
                 cycleCallback(resObj);
             } else {
@@ -166,6 +164,8 @@ module.exports = function (RED) {
         function cycleCallback(values) {
             readInProgress = false;
 
+            console.log("Endpoint - cycleCallback");
+            
             if (readDeferred && connected) {
                 doCycle();
                 readDeferred = 0;
@@ -214,23 +214,34 @@ module.exports = function (RED) {
         }
 
         function removeListeners() {
-             if (df1 !== null) df1.removeListener('connected', onConnect);
-             if (df1 !== null) df1.removeListener('disconnected', onDisconnect);
-             if (df1 !== null) df1.removeListener('error', onError);
+             if (df1 !== null) {
+                df1.removeListener('connected', onConnect);
+                df1.removeListener('disconnected', onDisconnect);
+                df1.removeListener('error', onError);
+                df1.removeListener('timeout', onTimeout);
+             }
         }
 
-        async function disconnect() {
+        /**
+         * Destroys the DF1 connection
+         * @param {Boolean} [reconnect=true]  
+         * @returns {Promise}
+         */
+        async function disconnect(reconnect = true) {
             if (!connected) return;
             connected = false;
 
-            if (_cycleInterval !== null) {
-                clearTimeout(_cycleInterval);
-                _cycleInterval = null;
+            clearInterval(_cycleInterval);
+            _cycleInterval = null;
+
+            if (df1) {
+                if (!reconnect) df1.removeListener('disconnected', onDisconnect);
+                await df1.destroy();
+                removeListeners();
+                df1 = null;
             }
 
-            if (df1 !== null) await df1.destroy();
-            removeListeners();
-            df1 = null;
+            console.log("Endpoint - disconnect");
         }
         
         async function connect() {
@@ -285,7 +296,6 @@ module.exports = function (RED) {
 
         function onDisconnect() {
             manageStatus('offline');
-            disconnect();
             if (!_reconnectTimeout) {
                 _reconnectTimeout = setTimeout(connect, 5000);
             }
@@ -322,15 +332,18 @@ module.exports = function (RED) {
 
         this.on('close', done => {
             manageStatus('offline');
-            if (_cycleInterval) clearInterval(_cycleInterval);
-            if (_reconnectTimeout) clearTimeout(_reconnectTimeout);
+            clearInterval(_cycleInterval);
+            clearTimeout(_reconnectTimeout);
+            _cycleInterval = null
+            _reconnectTimeout = null;
             
-            this.removeListener('__DO_CYCLE__', doCycle);
-            this.removeListener('__UPDATE_CYCLE__', updateCycleEvent);
-            this.removeListener('__GET_STATUS__', getStatus);
-            removeListeners();
+            that.removeListener('__DO_CYCLE__', doCycle);
+            that.removeListener('__UPDATE_CYCLE__', updateCycleEvent);
+            that.removeListener('__GET_STATUS__', getStatus);           
 
-            df1.destroy().then(done);
+            disconnect(false).then(done);
+
+            console.log("Endpoint - on close!");
         });
         
     }
