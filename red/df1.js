@@ -6,6 +6,7 @@
 
 const DF1 = require('node-df1').DF1Endpoint;
 const Port = require('node-df1').DataLink;
+const DF1AddressGroup = require('node-df1').DF1AddressGroup;
 
 const MIN_CYCLE_TIME = 50;
 
@@ -108,8 +109,7 @@ module.exports = function (RED) {
         let status;
         let that = this;
         let df1 = null;
-
-        let _vars = null;
+        let addressGroup = null;
         
         RED.nodes.createNode(this, config);
 
@@ -122,40 +122,20 @@ module.exports = function (RED) {
             status = newStatus;
             that.emit('__STATUS__', status);
         }
-        
-        // function doCycle() {
-        //     if (!readInProgress && connected) {
-                
-        //         melsec.readAllAddresses().then(cycleCallback).catch(e => {
-        //             that.error(e);
-        //             readInProgress = false;
-        //         });
-        //         readInProgress = true;
-        //     } else {
-        //         readDeferred++;
-        //     }
-        // }
 
-        async function doCycle() {
+        function doCycle() {
             if (!readInProgress && connected) {
                 readInProgress = true;
-                
-                let resObj = {};
-                let keys = Object.keys(_vars);
 
-                console.log("Endpoint - doCycle");
-                
-                for (let i = 0; i < keys.length; i++) {
-                    try {
-                        let res = await df1.readAddress(_vars[keys[i]]);
-                        resObj[keys[i]] = res.value;
-                    } catch (error) {
-                        onError(error);
-                        readInProgress = false;
-                        return;
-                    }
-                }
-                cycleCallback(resObj);
+                df1.readAddressGroup(addressGroup)
+                .then(result => {
+                    cycleCallback(result.values);
+                })
+                .catch(error => {
+                    onError(error);
+                    readInProgress = false;
+                });
+
             } else {
                 readDeferred++;
             }
@@ -163,8 +143,6 @@ module.exports = function (RED) {
 
         function cycleCallback(values) {
             readInProgress = false;
-
-            console.log("Endpoint - cycleCallback");
             
             if (readDeferred && connected) {
                 doCycle();
@@ -264,6 +242,7 @@ module.exports = function (RED) {
             }
             
             df1 = new DF1({portPath: portPath});
+            addressGroup = new DF1AddressGroup();
         
             df1.on('connected', onConnect);
             df1.on('disconnected', onDisconnect);
@@ -280,18 +259,17 @@ module.exports = function (RED) {
 
             manageStatus('online');
 
-            _vars = createTranslationTable(config.vartable);
+            let _vars = createTranslationTable(config.vartable);
 
-            // melsec.setTranslationCB(k => _vars[k]);
+            addressGroup.setTranslationCB(k => _vars[k]);
+            let varKeys = Object.keys(_vars);
 
-            // let varKeys = Object.keys(_vars);
-            // if (!varKeys || !varKeys.length) {
-            //     that.warn(RED._("melsec.endpoint.info.novars"));
-            // } else {
-            //     melsec.addAddress(varKeys);
-            // }
-
-            updateCycleTime(currentCycleTime);
+            if (!varKeys || !varKeys.length) {
+                that.warn(RED._("df1.endpoint.info.novars"));
+            } else {
+                addressGroup.addAddress(varKeys);
+                updateCycleTime(currentCycleTime);
+            }
         }
 
         function onDisconnect() {
