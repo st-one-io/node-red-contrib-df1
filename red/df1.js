@@ -6,7 +6,7 @@
 
 const DF1 = require('node-df1').DF1Endpoint;
 const Port = require('node-df1').DataLink;
-const DF1AddressGroup = require('node-df1').DF1AddressGroup;
+const {DF1AddressGroup} = require('node-df1');
 
 const MIN_CYCLE_TIME = 50;
 
@@ -103,6 +103,8 @@ module.exports = function (RED) {
         let readDeferred = 0;
         let currentCycleTime = config.cycletime;
         let portPath = config.serialport;
+        let errorMode = config.errormode;
+        let baudRate = parseInt(config.baudrate);
         let _cycleInterval;
         let _reconnectTimeout = null;
         let connected = false;
@@ -126,7 +128,7 @@ module.exports = function (RED) {
         function doCycle() {
             if (!readInProgress && connected) {
                 readInProgress = true;
-
+                
                 df1.readAddressGroup(addressGroup)
                 .then(result => {
                     cycleCallback(result.values);
@@ -143,7 +145,7 @@ module.exports = function (RED) {
 
         function cycleCallback(values) {
             readInProgress = false;
-            
+
             if (readDeferred && connected) {
                 doCycle();
                 readDeferred = 0;
@@ -241,7 +243,7 @@ module.exports = function (RED) {
                 return;
             }
             
-            df1 = new DF1({portPath: portPath});
+            df1 = new DF1({portPath: portPath, baudRate: baudRate, errorMode: errorMode});
             addressGroup = new DF1AddressGroup();
         
             df1.on('connected', onConnect);

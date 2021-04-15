@@ -10,10 +10,23 @@
 		<input type="text" id="node-config-input-serialport" data-i18n="[placeholder]df1.endpoint.label.serialport" style="width: 60%; margin-right: 10px;">
 		<a id="node-config-lookup-serialport" class="btn red-ui-button" data-i18n="[title]df1.endpoint.label.search"><i class="fa fa-search"></i></a>
 	</div>
+
+	<div class="form-row">
+		<label for="node-config-input-baudrate"><i class="fa fa-bolt"></i> <span data-i18n="df1.endpoint.label.baudrate"></span></label>
+		<input type="text" id="node-config-input-baudrate" data-i18n="[placeholder]df1.endpoint.label.baudrate" style="width: 20%; margin-right: 10px;">
+		<label for="node-config-input-errormode" style="width: 130px">
+            <i class="fa fa-hashtag "></i>
+            <span data-i18n="df1.endpoint.label.errormode"></span>
+        </label>
+        <select type="text" id="node-config-input-errormode" style="width: 15%">
+            <option value="CRC">CRC</option>
+            <option value="BCC">BCC</option>
+        </select>
+	</div>
 	
 	<div class="form-row">
         <label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="df1.endpoint.label.cycletime"></span></label>
-        <input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]df1.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
+        <input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]df1.endpoint.label.cycletime" style="width: 80px;"> <span>ms</span>
     </div>
 
     <div class="form-row" style="margin-bottom:0;">
@@ -107,32 +120,18 @@
 		//TODO: Incorporate full validation of DF1 Address from node-df1
 		
 		let DF1_REGEX_ADDR = /^([A-Z])([0-9]+):([0-9]+)(?:(?:\.)([0-9]+|[A-Z]+))?(?:(?:\/)([0-9]+|[A-Z]+))?$/;
-        // let DF1_FILE_TYPE = ["O","I","S","B","T","C","R","N","F"];
+        let DF1_FILE_TYPE = ["O","I","S","B","T","C","R","N","F"];
 
         let match = address.match(DF1_REGEX_ADDR);
 		if (!match) return 'ERR_PARSE_UNKNOWN_FORMAT';
 
-		// let fileType = match[1];
-		// let fileNum = match[2];
-		// let element = match[3];
-		// let subElement = match[4];
-		// let bit = match[5];
+		let fileType = match[1];
+        let fileNum = parseInt(match[2], 10);
+        let element = parseInt(match[3], 10);
 
-
-        // if (!DF1_FILE_TYPE.includes(match_memArea)) return 'ERR_PARSE_MEM_AREA';
-
-        // let deviceOffset = parseInt(match_device);
-        // if (isNaN(deviceOffset)) return 'ERR_PARSE_DEVICE_OFFSET';
-
-        // if (match_bit) {
-        //     let bitOffset = parseInt(match_bit);
-        //     if (isNaN(bitOffset)) return 'ERR_PARSE_BIT_OFFSET';
-        // }
-
-        // if (match_arr) {
-        //     let arrayLength = parseInt(match_arr);
-        //     if (isNaN(arrayLength)) return 'ERR_PARSE_ARRAY_LENGTH';
-        // }
+		if (fileNum > 254) return 'ERR_PARSE_FILENUM';
+		if (!DF1_FILE_TYPE.includes(fileType)) return 'ERR_PARSE_FILETYPE';
+        if (element > 254) return 'ERR_PARSE_ELENUM';
         
         return null;
     }
@@ -159,6 +158,13 @@
 			},
             cycletime: {
 				value: 1000
+			},
+			errormode: {
+				value: 'CRC'
+			},
+			baudrate: {
+				value: 19200,
+				validate: RED.validators.number()
 			},
             vartable: {
 				value: [{
@@ -331,9 +337,7 @@
 								
 								elmHtml = '<a>'
 									+ '<b>' + label + '</b>'
-									+ '<br/>'
-									+ elm.path
-									+ '</a>'
+									+ '<br/>'+ elm.path + '</a>'
 								return $('<li style="padding: 2px">').attr("data-value", elm.path).append(elmHtml).appendTo(ul);
 							};
 						},
@@ -448,7 +452,7 @@
 
 <script type="text/html" data-template-name="df1 in">
 
-    <div class="form-row" style="min-width: 550px">
+    <div class="form-row">
         <label for="node-input-endpoint">
             <i class="fa fa-cog"></i>
             <span data-i18n="df1.in.label.endpoint"></span>
