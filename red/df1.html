@@ -55,51 +55,63 @@
 </script>
 
 <script type="text/html" data-help-name="df1 endpoint">
-	<!-- <p>Configures the connection to a PLC</p>
+	<p>Configures the connection to a PLC</p>
 	<p>This node was created by <a href="https://st-one.io" target="_blank">ST-One</a></p>
 
 	<h3>Details</h3>
 	<p>
-		The <b>Cycle time</b> configuration specifies the time interval in which
+		The <strong>Cycle time</strong> configuration specifies the time interval in which
 		all variables will be read from the PLC. A value of <code>0</code> disables
 		automatic reading.
 	</p>
 
+	<p>
+		The <strong>Baud Rate</strong> and <strong>Error Detection</strong> must both be set according 
+		to the value configured on the port used for communicating with the PLC.
+	</p>
+
 	<h3>Variable addressing</h3>
+
 	<ul>
-		<li>MEMORY AREA.</li>
+		<li>FILE TYPE</li>
 		<ul>
-			<li>(S,X,Y,M,D...).</li>
+			<li>O: Output</li>
+			<li>I: Input</li>
+			<li>S: Status</li>
+			<li>B: Binary</li>
+			<li>N: Integer</li>
+			<li>T: Timer</li>
+			<li>C: Counter</li>
+			<li>R: Control</li>
+			<li>F: Float</li>
 		</ul>
-		<li>TYPE MODIFIER <strong>Can be empty if needed.</strong></li>
+		<li>FILE NUMBER</li>
 		<ul>
-			<li>INT (Signed 16Bits).</li>
-			<li>DINT (Signed 32Bits).</li>
-			<li>WORD (Unsigned 16Bits).</li>
-			<li>DWORD (Unsigned 32Bits).</li>
-			<li>REAL (Float Single Precision 32Bits).</li>
-			<li>REAL (Float Double Precision 64Bits).</li>
+			<li>0,1,2... (Ex. B3 (3 is the file number)).</li>
 		</ul>
-		<li>DEVICE OFFSET (Address Number).</li>
+		<li>ELEMENT NUMBER(:)</li>
 		<ul>
-			<li>0,1,2 (Ex. D20 (20 is the device offset)).</li>
+			<li>0,1,2... (Ex. S2:4 (4 is the element number)).</li>
 		</ul>
-		<li>BIT OFFSET(.) <strong>Can be empty if needed.</strong></li>
+		<li>SUB-ELEMENT NUMBER(.)</li>
 		<ul>
-			<li>D20.1 (Reads bit 1 from D20 address.)</li>
+			<li>0,1,2... (Ex. I1:0.5 (5 is the sub-element number)).</li>
 		</ul>
-		<li>ARRAY LENGTH(,) <strong>Can be empty if needed.</strong></li>
+		<li>BIT OFFSET(/)</li>
 		<ul>
-			<li>D20,4 (Reads 4 address from D20, D21, D22 and D23).</li>
+			<li>0,1,2... (Ex. O0:0.0/14 (14 is the bit offset)).</li>
 		</ul>
 	</ul>
 
 	<h4>Examples</h4>
 	<ul>
-		<li>DDINT20,4: Reads D20-D21,D22-D23,D24-D25,D26-D27</li>
-		<li>DINT20,4: Reads D20,D21,D22,D23</li>
-		<li>Y0</li>
-	</ul> -->
+		<li>O0:0.1 - Reads a sub-element (16 bits/word)</li>
+		<li>I1:0.2/3 - Reads a single bit</li>
+		<li>N7:0 - Reads an INTEGER element (16 bits/word)</li>
+		<li>F8:0 - Reads a FLOAT element (32 bits/floating point number)</li>
+		<li>N7:1/15 - Reads a single bit</li>
+		<li>T4:0 - Reads a TIMER element (48 bits/parsed timer object)</li>
+	</ul>
 
 </script>
 
@@ -494,7 +506,7 @@
 
 <script type="text/html" data-help-name="df1 in">
 
-	<!-- <p>Reads data from a Mitsubishi FX PLC</p>
+	<p>Reads data from an Allen-Bradley PLC</p>
 	<p>This node was created by <a href="https://st-one.io" target="_blank">ST-One</a></p>
 
 	<h3>Outputs</h3>
@@ -504,18 +516,11 @@
 			The value(s) as read from the PLC. The format and type of the payload
 			depends on the configured "Mode"
 		</dd>
-
-		<dt>topic<span class="property-type">string</span></dt>
-		<dd>
-			The name of the variable, when the message refers to a single variable
-			(that is, when mode is "Single Variable" or "All variables, one per
-			message")
-		</dd>
 	</dl>
-	
+
 	<h3>Details</h3>
 	<p>
-		All data is read cyclically from the PLC as configured in the <i>melsec endpoint</i>, 
+		All data is read cyclically from the PLC as configured in the <i>df1 endpoint</i>, 
 		but there are three modes of making it available in a flow:
 	</p>
 	<ul>
@@ -537,7 +542,7 @@
 			with all configured variables and their values. If <i>diff</i> is checked, a 
 			message is sent if at least one of the variables changes its value.
 		</li>
-	</ul> -->
+	</ul>
 </script>
 
 <script type="text/javascript">
@@ -659,7 +664,7 @@
 </script>
 
 <script type="text/html" data-help-name="df1 control">
-	<!-- <p>Enables advanced control of the PLC and the connection</p>
+	<p>Enables advanced control of the PLC and the connection</p>
 	<p>This node was created by <a href="https://st-one.io" target="_blank">ST-One</a></p>
 	
 	<h3>Details</h3>
@@ -684,7 +689,7 @@
 			variable). Note that the <i>melsec in</i> nodes are still required to read
 			the values of the variables.
 		</dd>
-	</dl> -->
+	</dl>
 </script>
 
 <script type="text/javascript">
