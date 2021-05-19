@@ -4,9 +4,9 @@
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
-const DF1 = require('node-df1').DF1Endpoint;
-const Port = require('node-df1').DataLink;
-const {DF1AddressGroup} = require('node-df1');
+const DF1 = require('@protocols/node-df1').DF1Endpoint;
+const Port = require('@protocols/node-df1').DataLink;
+const {DF1AddressGroup} = require('@protocols/node-df1');
 
 const MIN_CYCLE_TIME = 50;
 

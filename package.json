@@ -21,6 +21,6 @@
   },
   "bundledDependencies": [],
   "dependencies": {
-    "node-df1": "file:../node-df1"
+    "@protocols/node-df1": "^1.0.0"
   }
 }
