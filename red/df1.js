@@ -5,7 +5,7 @@
 */
 
 const DF1 = require('@protocols/node-df1').DF1Endpoint;
-const Port = require('@protocols/node-df1').DataLink;
+const Port = require('@protocols/node-df1').DF1DataLinkSession;
 const {DF1AddressGroup} = require('@protocols/node-df1');
 
 const MIN_CYCLE_TIME = 50;

@@ -21,6 +21,6 @@
   },
   "bundledDependencies": [],
   "dependencies": {
-    "@protocols/node-df1": "^2.0.0"
+    "@protocols/node-df1": "^2.0.1"
   }
 }
