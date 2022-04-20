@@ -20,7 +20,7 @@
     }
   },
   "bundledDependencies": [],
-  "dependencies": {
-    "@protocols/node-df1": "^2.0.1"
+  "optionalDependencies": {
+    "@protocols/node-df1": "^2.1.1"
   }
 }
