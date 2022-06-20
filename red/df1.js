@@ -4,15 +4,22 @@
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
-const DF1 = require('@protocols/node-df1').DF1Endpoint;
-const Port = require('@protocols/node-df1').DF1DataLinkSession;
-const {DF1AddressGroup} = require('@protocols/node-df1');
+try {
+    var DF1 = require('@protocols/node-df1').DF1Endpoint;
+    var Port = require('@protocols/node-df1').DF1DataLinkSession;
+    var {DF1AddressGroup} = require('@protocols/node-df1');
+} catch (error) {
+    var DF1 = null
+    var Port = null
+    var DF1AddressGroup = null
+}
 
 const MIN_CYCLE_TIME = 50;
 
 module.exports = function (RED) {
     
     RED.httpAdmin.get('/__node-red-contrib-df1/discover/serialports', RED.auth.needsPermission('df1.discover'), function (req, res) {
+        if (!Port) return res.status(500).end();
         Port.getPortsList().then(function (serialports) {
             res.json(serialports).end();
         }).catch(() => {
@@ -225,6 +232,8 @@ module.exports = function (RED) {
         }
         
         async function connect() {
+
+            if (!DF1 || !DF1AddressGroup) return that.error('Missing "@protocols/node-df1" dependency, avaliable only on the ST-One hardware. Please contact us at "st-one.io" for pricing and more information.')
             
             manageStatus('connecting');
             
@@ -298,8 +307,10 @@ module.exports = function (RED) {
         }
 
         function updateCycleEvent(obj) {
-            obj.err = updateCycleTime(obj.msg.payload);
-            that.emit('__UPDATE_CYCLE_RES__', obj);
+            if (connected) {
+                obj.err = updateCycleTime(obj.msg.payload);
+                that.emit('__UPDATE_CYCLE_RES__', obj);
+            }
         }
 
         manageStatus('offline');
