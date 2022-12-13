@@ -125,8 +125,7 @@ module.exports = function (RED) {
         //avoids warnings when we have a lot of DF1 In nodes
         this.setMaxListeners(0);
 
-        this.getDf1Session = async () => {
-
+        this.getDf1Session = () => {
             return new Promise ((res,rej) => {
                 df1.getDf1Protocol()
                 .then((df1Protocol) => {
@@ -211,12 +210,7 @@ module.exports = function (RED) {
         }
 
         function removeListeners() {
-             if (df1 !== null) {
-                that.removeListener('connected',onConnect)      
-                that.removeListener('disconnected',onDisconnect) 
-                that.removeListener('error',onError) 
-                that.removeListener('timeout',onTimeout)           
-
+             if (df1 !== null) {        
                 df1.removeListener('connected', onConnect);
                 df1.removeListener('disconnected', onDisconnect);
                 df1.removeListener('error', onError);
