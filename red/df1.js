@@ -127,9 +127,11 @@ module.exports = function (RED) {
 
         this.getDf1Session = () => {
             return new Promise ((res,rej) => {
-                df1.getDf1Protocol()
+                df1.df1Protocol()
                 .then((df1Protocol) => {
-                    res(df1Protocol.getDataLinkSession());
+                    res(df1Protocol.dataLinkSession());
+                }).catch(e => {
+                    rej(e);
                 });
             });
         };
