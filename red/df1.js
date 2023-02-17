@@ -126,14 +126,9 @@ module.exports = function (RED) {
         this.setMaxListeners(0);
 
         this.getDf1Session = () => {
-            return new Promise ((res,rej) => {
-                df1.df1Protocol()
-                .then((df1Protocol) => {
-                    res(df1Protocol.dataLinkSession());
-                }).catch(e => {
-                    rej(e);
-                });
-            });
+            const df1protocol = df1.df1protocol();            
+
+            if(df1protocol) return df1protocol.dataLinkSession();
         };
 
         function manageStatus(newStatus) {
