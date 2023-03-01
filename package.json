@@ -29,6 +29,6 @@
   "homepage": "https://github.com/st-one-io/node-red-contrib-df1#readme",
   "bundledDependencies": [],
   "optionalDependencies": {
-    "@protocols/node-df1": "^2.1.1"
+    "@protocols/node-df1": "^2.2.0"
   }
 }
