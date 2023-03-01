@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-df1",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Node-RED Node to communicate with Allen Bredley PLCs over Serial Port",
   "main": "df1.js",
   "scripts": {
@@ -19,6 +19,14 @@
       "df1": "red/df1.js"
     }
   },
+  "bugs":{
+    "url": "https://github.com/st-one-io/node-red-contrib-df1/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/st-one-io/node-red-contrib-df1.git"
+  },
+  "homepage": "https://github.com/st-one-io/node-red-contrib-df1#readme",
   "bundledDependencies": [],
   "optionalDependencies": {
     "@protocols/node-df1": "^2.1.1"
