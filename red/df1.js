@@ -125,6 +125,12 @@ module.exports = function (RED) {
         //avoids warnings when we have a lot of DF1 In nodes
         this.setMaxListeners(0);
 
+        this.getDf1Session = () => {
+            const df1protocol = df1.df1protocol();            
+
+            if(df1protocol) return df1protocol.dataLinkSession();
+        };
+
         function manageStatus(newStatus) {
             if (status == newStatus) return;
 
@@ -201,7 +207,7 @@ module.exports = function (RED) {
         }
 
         function removeListeners() {
-             if (df1 !== null) {
+             if (df1 !== null) {        
                 df1.removeListener('connected', onConnect);
                 df1.removeListener('disconnected', onDisconnect);
                 df1.removeListener('error', onError);
@@ -253,6 +259,7 @@ module.exports = function (RED) {
             }
             
             df1 = new DF1({portPath: portPath, baudRate: baudRate, errorMode: errorMode});
+
             addressGroup = new DF1AddressGroup();
         
             df1.on('connected', onConnect);
@@ -267,6 +274,8 @@ module.exports = function (RED) {
             readInProgress = false;
             readDeferred = 0;
             connected = true;
+
+            that.emit('connected')
 
             manageStatus('online');
 
@@ -284,6 +293,9 @@ module.exports = function (RED) {
         }
 
         function onDisconnect() {
+
+            that.emit('disconnected')
+
             manageStatus('offline');
             if (!_reconnectTimeout) {
                 _reconnectTimeout = setTimeout(connect, 5000);
@@ -291,12 +303,17 @@ module.exports = function (RED) {
         }
 
         function onError(e) {
+            that.emit('error')
+
             manageStatus('offline');
             that.error(e && e.toString());
             disconnect();
         }
 
         function onTimeout(e) {
+
+            that.emit('timeout')
+
             manageStatus('offline');
             that.error(e && e.toString());
             disconnect();

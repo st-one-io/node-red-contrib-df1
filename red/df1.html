@@ -132,7 +132,7 @@
 		//TODO: Incorporate full validation of DF1 Address from node-df1
 		
 		let DF1_REGEX_ADDR = /^([A-Z])([0-9]+):([0-9]+)(?:(?:\.)([0-9]+|[A-Z]+))?(?:(?:\/)([0-9]+|[A-Z]+))?$/;
-        let DF1_FILE_TYPE = ["O","I","S","B","T","C","R","N","F"];
+        let DF1_FILE_TYPE = ["O","I","S","B","T","C","R","N","F","L"];
 
         let match = address.match(DF1_REGEX_ADDR);
 		if (!match) return 'ERR_PARSE_UNKNOWN_FORMAT';
