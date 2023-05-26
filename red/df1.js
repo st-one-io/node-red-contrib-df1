@@ -126,10 +126,14 @@ module.exports = function (RED) {
         this.setMaxListeners(0);
 
         this.getDf1Session = () => {
-            const df1protocol = df1.df1protocol();            
+            const df1protocol = df1.df1Protocol;            
 
-            if(df1protocol) return df1protocol.dataLinkSession();
+            if(df1protocol) return df1protocol.dataLinkSession;
         };
+
+        this.df1Endpoint = () => {
+            return df1;
+        }
 
         function manageStatus(newStatus) {
             if (status == newStatus) return;
@@ -275,8 +279,6 @@ module.exports = function (RED) {
             readDeferred = 0;
             connected = true;
 
-            that.emit('connected')
-
             manageStatus('online');
 
             let _vars = createTranslationTable(config.vartable);
@@ -303,16 +305,13 @@ module.exports = function (RED) {
         }
 
         function onError(e) {
-            that.emit('error')
-
+            
             manageStatus('offline');
             that.error(e && e.toString());
             disconnect();
         }
 
         function onTimeout(e) {
-
-            that.emit('timeout')
 
             manageStatus('offline');
             that.error(e && e.toString());
