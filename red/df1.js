@@ -125,12 +125,6 @@ module.exports = function (RED) {
         //avoids warnings when we have a lot of DF1 In nodes
         this.setMaxListeners(0);
 
-        this.getDf1Session = () => {
-            const df1protocol = df1.df1Protocol;            
-
-            if(df1protocol) return df1protocol.dataLinkSession;
-        };
-
         this.df1Endpoint = () => {
             return df1;
         }
